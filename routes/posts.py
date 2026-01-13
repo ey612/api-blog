@@ -55,4 +55,24 @@ def get_post(post_id):
         'user_id': post.user_id,
         'created_at': post.created_at.isoformat()
     }), 200
+
+#게시글 수정
+@posts_bp.put('/posts/<int:post_id>')
+def put_post(post_id):
     
+    post = Post.query.get(post_id)
+    
+    if post is None:
+        return jsonify({'error': '게시글을 찾을 수 없습니다.'}), 404
+    
+    data = request.json
+    post.title = data['title']
+    post.content = data['content']
+
+    db.session.commit()
+    
+    return jsonify({
+        'id': post.id,
+        'title': post.title,
+        'content': post.content
+    }), 200
