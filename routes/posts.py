@@ -5,6 +5,7 @@ from models import db, Post
 
 posts_bp = Blueprint('posts', __name__)
 
+# 게시글 생성
 @posts_bp.post('/posts')
 def create_post():
     data = request.json
@@ -23,7 +24,24 @@ def create_post():
         'title': new_post.title,
         'content': new_post.content
     }), 201
+
+#게시글 목록 조회
+@posts_bp.get('/posts')
+def get_posts():
+    posts = Post.query.all()
+    result = []
     
+    for post in posts:
+        result.append({
+            'id': post.id,
+            'title': post.title,
+            'user_id': post.user_id,
+            'created_at': post.created_at.isoformat()
+        })
+    return jsonify(result), 200
+
+
+#게시글 조회
 @posts_bp.get('/posts/<int:post_id>')
 def get_post(post_id):
     post = Post.query.get(post_id)
