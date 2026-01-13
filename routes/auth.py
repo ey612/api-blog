@@ -1,23 +1,28 @@
 # 회원가입
 
 from flask import Blueprint, request, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 
 auth_bp = Blueprint('auth', __name__)
 
+#회원가입
 @auth_bp.post('/register')
 def register():
-    data = request.json
+    data = request.json #Postman에서 보낸 데이터 받기
     
     #중복체크
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'error': '❌ 이미 존재하는 이메일입니다.'}), 400
     
+    #비밀번호 해싱
+    hashed_password = generate_password_hash(data['password'])
+    
     #새 사용자 생성
     new_user = User(
-        username=data['username'],
-        email=data['email'],
-        password=data['password'] #TODO: 해싱 필요
+        username = data['username'],
+        email = data['email'],
+        password = hashed_password
     )
     
     db.session.add(new_user)
@@ -29,6 +34,7 @@ def register():
         'email': new_user.email
     }), 201
 
+#사용자 리스트 출력
 @auth_bp.get('/users')
 def get_users():
     users = User.query.all()
@@ -41,7 +47,7 @@ def get_users():
         })
     return jsonify(result), 200
 
-
+#로그인
 @auth_bp.post('/login')
 def login():
     #TODO: 나중에 구현
