@@ -76,3 +76,19 @@ def put_post(post_id):
         'title': post.title,
         'content': post.content
     }), 200
+    
+#게시글 삭제
+@posts_bp.delete('/posts/<int:post_id>')
+def delete_post(post_id):
+    
+    post = Post.query.get(post_id)
+    
+    if post is None:
+        return jsonify({'error': '게시글을 찾을 수 없습니다.'}), 404
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify({
+        'message': '게시글 삭제 완료.'
+    }), 200
