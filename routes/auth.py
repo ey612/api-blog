@@ -50,6 +50,29 @@ def get_users():
 #로그인
 @auth_bp.post('/login')
 def login():
-    #TODO: 나중에 구현
-    return jsonify({'message': '로그인 기능 구현 예정'}), 200
+    try:
+        data = request.json
+        
+        #데이터 확인
+        if not data or 'email' not in data or 'password' not in data:
+            return jsonify({'error': '이메일과 비밀번호를 확인해주세요.'}), 400
+        
+        #사용자 찾기
+        user = User.query.filter_by(email=data['email']).first()
+        
+        #사용자가 없거나 비밀번호가 틀리면
+        if not user or not check_password_hash(user.password, data['password']):
+            return jsonify({'error': '이메일 또는 비밀번호가 잘못되었습니다.'})
+        
+        return jsonify({
+            'message': '로그인 성공!',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+        }), 200
+    except Exception as e:
+        print(f"error: {str(e)}")
+        return jsonify({error: str(e)}), 500
 
