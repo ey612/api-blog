@@ -1,1 +1,40 @@
 # 게시글 관련
+
+from flask import Blueprint, request, jsonify
+from models import db, Post
+
+posts_bp = Blueprint('posts', __name__)
+
+@posts_bp.post('/posts')
+def create_post():
+    data = request.json
+    
+    new_post = Post(
+        title=data['title'],
+        content=data['content'],
+        user_id=data['user_id'] #TODO: JWT에서 가져오기
+    )
+    
+    db.session.add(new_post)
+    db.session.commit()
+    
+    return jsonify({
+        'id': new_post.id,
+        'title': new_post.title,
+        'content': new_post.content
+    }), 201
+    
+@posts_bp.get('/posts/<int:post_id>')
+def get_post(post_id):
+    post = Post.query.get(post_id)
+    if post is None:
+        return jsonify({'error': '게시글을 찾을 수 없습니다.'}), 404
+    
+    return jsonify({
+        'id': post.id,
+        'title': post.title,
+        'content': post.content,
+        'user_id': post.user_id,
+        'created_at': post.created_at.isoformat()
+    }), 200
+    
