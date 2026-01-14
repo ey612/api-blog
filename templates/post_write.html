@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글쓰기 - 블로그</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-content h1 {
+            font-size: 28px;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .btn-back {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-back:hover {
+            background: #5a6268;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 32px;
+            font-size: 16px;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+        }
+        .form-container {
+            background: white;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .form-title {
+            font-size: 32px;
+            color: #212529;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f1f3f5;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .form-group {
+            margin-bottom: 28px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 400px;
+            font-family: inherit;
+            transition: all 0.3s;
+            line-height: 1.6;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 3px solid #f1f3f5;
+        }
+        .message {
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .char-count {
+            text-align: right;
+            font-size: 14px;
+            color: #868e96;
+            margin-top: 8px;
+        }
+        footer {
+            background: #343a40;
+            color: #adb5bd;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+        }
+        footer p {
+            margin-bottom: 8px;
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+            .form-title {
+                font-size: 26px;
+            }
+            .header-content h1 {
+                font-size: 22px;
+            }
+            .user-badge {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 onclick="location.href='/'"><i class="fas fa-blog"></i> 블로그</h1>
+            <div class="user-info">
+                <div class="user-badge">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName"></span>
+                </div>
+                <button class="btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">
+                <i class="fas fa-pen-fancy"></i>
+                새 글 작성
+            </h2>
+            <div id="message" class="message"></div>
+            <form id="postForm">
+                <div class="form-group">
+                    <label for="title">
+                        <i class="fas fa-heading"></i> 제목
+                    </label>
+                    <input type="text" id="title" name="title" required placeholder="멋진 제목을 입력하세요...">
+                </div>
+                <div class="form-group">
+                    <label for="content">
+                        <i class="fas fa-align-left"></i> 내용
+                    </label>
+                    <textarea id="content" name="content" required placeholder="당신의 이야기를 들려주세요..."></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span>자
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a href="/" class="btn btn-back">
+                        <i class="fas fa-times"></i> 취소
+                    </a>
+                    <button type="submit" class="btn btn-submit">
+                        <i class="fas fa-paper-plane"></i> 작성하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 블로그. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color: #e74c3c;"></i> using Flask & Vanilla JS</p>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // 로그인 체크
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = '/login';
+        }
+
+        // 사용자 이름 표시
+        document.getElementById('userName').textContent = user.username;
+
+        // 로그아웃 함수
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        }
+
+        // 글자 수 카운터
+        const contentTextarea = document.getElementById('content');
+        const charCountSpan = document.getElementById('charCount');
+
+        contentTextarea.addEventListener('input', () => {
+            charCountSpan.textContent = contentTextarea.value.length.toLocaleString();
+        });
+
+        // 게시글 작성
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const messageDiv = document.getElementById('message');
+
+            if (!title || !content) {
+                messageDiv.textContent = '제목과 내용을 모두 입력해주세요.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        user_id: user.id
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = '게시글이 작성되었습니다!';
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+
+                    // 1초 후 게시글 상세 페이지로 이동
+                    setTimeout(() => {
+                        window.location.href = `/posts/${data.id}`;
+                    }, 1000);
+                } else {
+                    messageDiv.textContent = data.error || '게시글 작성에 실패했습니다.';
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                messageDiv.textContent = '서버 연결에 실패했습니다.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글 수정 - 블로그</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-content h1 {
+            font-size: 28px;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .btn-back {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-back:hover {
+            background: #5a6268;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 32px;
+            font-size: 16px;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+        }
+        .form-container {
+            background: white;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .form-title {
+            font-size: 32px;
+            color: #212529;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f1f3f5;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .form-group {
+            margin-bottom: 28px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #495057;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 400px;
+            font-family: inherit;
+            transition: all 0.3s;
+            line-height: 1.6;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 3px solid #f1f3f5;
+        }
+        .message {
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .char-count {
+            text-align: right;
+            font-size: 14px;
+            color: #868e96;
+            margin-top: 8px;
+        }
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: 500;
+        }
+        footer {
+            background: #343a40;
+            color: #adb5bd;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+        }
+        footer p {
+            margin-bottom: 8px;
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+            .form-title {
+                font-size: 26px;
+            }
+            .header-content h1 {
+                font-size: 22px;
+            }
+            .user-badge {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1 onclick="location.href='/'"><i class="fas fa-blog"></i> 블로그</h1>
+            <div class="user-info">
+                <div class="user-badge">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName"></span>
+                </div>
+                <button class="btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="formWrapper" class="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">게시글을 불러오는 중...</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 블로그. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color: #e74c3c;"></i> using Flask & Vanilla JS</p>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // 로그인 체크
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = '/login';
+        }
+
+        // 사용자 이름 표시
+        document.getElementById('userName').textContent = user.username;
+
+        // URL에서 게시글 ID 추출
+        const postId = window.location.pathname.split('/')[2];
+
+        // 로그아웃 함수
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        }
+
+        // 게시글 불러오기 및 폼 렌더링
+        async function loadPost() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/posts/${postId}`);
+
+                if (!response.ok) {
+                    throw new Error('게시글을 찾을 수 없습니다.');
+                }
+
+                const post = await response.json();
+
+                // 작성자 확인
+                if (user.id !== post.user_id) {
+                    alert('수정 권한이 없습니다.');
+                    window.location.href = `/posts/${postId}`;
+                    return;
+                }
+
+                const wrapper = document.getElementById('formWrapper');
+                wrapper.className = 'form-container';
+                wrapper.innerHTML = `
+                    <h2 class="form-title">
+                        <i class="fas fa-edit"></i>
+                        글 수정
+                    </h2>
+                    <div id="message" class="message"></div>
+                    <form id="postForm">
+                        <div class="form-group">
+                            <label for="title">
+                                <i class="fas fa-heading"></i> 제목
+                            </label>
+                            <input type="text" id="title" name="title" required value="${escapeHtml(post.title)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="content">
+                                <i class="fas fa-align-left"></i> 내용
+                            </label>
+                            <textarea id="content" name="content" required>${escapeHtml(post.content)}</textarea>
+                            <div class="char-count">
+                                <span id="charCount">${post.content.length.toLocaleString()}</span>자
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <a href="/posts/${postId}" class="btn btn-back">
+                                <i class="fas fa-times"></i> 취소
+                            </a>
+                            <button type="submit" class="btn btn-submit">
+                                <i class="fas fa-save"></i> 수정하기
+                            </button>
+                        </div>
+                    </form>
+                `;
+
+                // 글자 수 카운터
+                const contentTextarea = document.getElementById('content');
+                const charCountSpan = document.getElementById('charCount');
+
+                contentTextarea.addEventListener('input', () => {
+                    charCountSpan.textContent = contentTextarea.value.length.toLocaleString();
+                });
+
+                // 폼 제출 이벤트 리스너 추가
+                document.getElementById('postForm').addEventListener('submit', updatePost);
+            } catch (error) {
+                document.getElementById('formWrapper').innerHTML = `
+                    <div class="form-container">
+                        <div class="message error" style="display: block;">
+                            <i class="fas fa-exclamation-triangle"></i> ${error.message}
+                        </div>
+                        <a href="/" class="btn btn-back" style="margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i> 목록으로
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        // HTML 이스케이프 함수
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 게시글 수정
+        async function updatePost(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const messageDiv = document.getElementById('message');
+
+            if (!title || !content) {
+                messageDiv.textContent = '제목과 내용을 모두 입력해주세요.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = '게시글이 수정되었습니다!';
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+
+                    // 1초 후 게시글 상세 페이지로 이동
+                    setTimeout(() => {
+                        window.location.href = `/posts/${postId}`;
+                    }, 1000);
+                } else {
+                    messageDiv.textContent = data.error || '게시글 수정에 실패했습니다.';
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                messageDiv.textContent = '서버 연결에 실패했습니다.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            }
+        }
+
+        // 페이지 로드시 게시글 불러오기
+        loadPost();
+    </script>
+</body>
+</html>
