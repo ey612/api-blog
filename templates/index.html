@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>블로그 - 게시글 목록</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -11,15 +12,20 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .header-content {
             max-width: 1200px;
@@ -31,24 +37,37 @@
         }
         .header-content h1 {
             font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .user-name {
-            font-size: 16px;
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .btn-primary {
             background: white;
@@ -56,92 +75,226 @@
         }
         .btn-primary:hover {
             background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .btn-logout {
             background: rgba(255,255,255,0.2);
             color: white;
-            border: 1px solid white;
+            border: 1px solid rgba(255,255,255,0.4);
         }
         .btn-logout:hover {
             background: rgba(255,255,255,0.3);
         }
         .container {
             max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
         }
         .top-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .section-title {
+            font-size: 28px;
+            color: #212529;
+            font-weight: 700;
+        }
+        .post-count {
+            font-size: 16px;
+            color: #6c757d;
+            font-weight: 400;
         }
         .posts-grid {
             display: grid;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
         }
         .post-card {
             background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-left: 4px solid #667eea;
+            position: relative;
+            overflow: hidden;
+        }
+        .post-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .post-card:hover::before {
+            transform: scaleX(1);
         }
         .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
         }
         .post-title {
             font-size: 22px;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
+            color: #212529;
+            margin-bottom: 12px;
+            font-weight: 700;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .post-preview {
+            font-size: 15px;
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         .post-meta {
-            color: #777;
-            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #868e96;
+            padding-top: 16px;
+            border-top: 1px solid #f1f3f5;
+        }
+        .post-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: #495057;
         }
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .empty-state i {
+            font-size: 64px;
+            color: #dee2e6;
+            margin-bottom: 20px;
         }
         .empty-state h2 {
-            color: #555;
-            margin-bottom: 20px;
+            color: #495057;
+            margin-bottom: 12px;
+            font-size: 24px;
+        }
+        .empty-state p {
+            color: #868e96;
+            margin-bottom: 24px;
         }
         .loading {
             text-align: center;
-            padding: 60px 20px;
-            font-size: 18px;
+            padding: 80px 20px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 16px;
             color: #667eea;
+            font-weight: 500;
+        }
+        footer {
+            background: #343a40;
+            color: #adb5bd;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+        }
+        footer p {
+            margin-bottom: 8px;
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-content h1 {
+                font-size: 22px;
+            }
+            .user-badge {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>📝 블로그</h1>
+            <h1><i class="fas fa-blog"></i> 블로그</h1>
             <div class="user-info">
-                <span class="user-name" id="userName"></span>
-                <a href="/posts/new" class="btn btn-primary">글쓰기</a>
-                <button class="btn btn-logout" onclick="logout()">로그아웃</button>
+                <div class="user-badge">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName"></span>
+                </div>
+                <a href="/posts/new" class="btn btn-primary">
+                    <i class="fas fa-pen"></i> 글쓰기
+                </a>
+                <button class="btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
             </div>
         </div>
     </header>
 
     <div class="container">
         <div class="top-section">
-            <h2>전체 게시글</h2>
+            <div>
+                <h2 class="section-title">전체 게시글</h2>
+                <p class="post-count" id="postCount">게시글을 불러오는 중...</p>
+            </div>
         </div>
         <div id="postsContainer" class="loading">
-            게시글을 불러오는 중...
+            <div class="spinner"></div>
+            <div class="loading-text">게시글을 불러오는 중...</div>
         </div>
     </div>
+
+    <footer>
+        <p>&copy; 2024 블로그. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color: #e74c3c;"></i> using Flask & Vanilla JS</p>
+    </footer>
 
     <script>
         const API_BASE_URL = 'http://localhost:5000/api';
@@ -180,34 +333,60 @@
                 const posts = await response.json();
 
                 const container = document.getElementById('postsContainer');
+                const countElement = document.getElementById('postCount');
 
                 if (posts.length === 0) {
+                    countElement.textContent = '게시글이 없습니다';
                     container.innerHTML = `
                         <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
                             <h2>게시글이 없습니다</h2>
                             <p>첫 번째 게시글을 작성해보세요!</p>
+                            <a href="/posts/new" class="btn btn-primary" style="margin-top: 20px;">
+                                <i class="fas fa-pen"></i> 새 글 작성
+                            </a>
                         </div>
                     `;
                     return;
                 }
 
+                countElement.textContent = `총 ${posts.length}개의 게시글`;
                 container.className = 'posts-grid';
-                container.innerHTML = posts.map(post => `
-                    <div class="post-card" onclick="viewPost(${post.id})">
-                        <div class="post-title">${post.title}</div>
-                        <div class="post-meta">
-                            작성일: ${formatDate(post.created_at)}
+                container.innerHTML = posts.map(post => {
+                    const preview = post.content.length > 150
+                        ? post.content.substring(0, 150) + '...'
+                        : post.content;
+
+                    return `
+                        <div class="post-card" onclick="viewPost(${post.id})">
+                            <div class="post-title">${escapeHtml(post.title)}</div>
+                            <div class="post-preview">${escapeHtml(preview)}</div>
+                            <div class="post-meta">
+                                <div class="post-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    ${formatDate(post.created_at)}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } catch (error) {
+                document.getElementById('postCount').textContent = '오류 발생';
                 document.getElementById('postsContainer').innerHTML = `
                     <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
                         <h2>게시글을 불러오는데 실패했습니다</h2>
                         <p>서버 연결을 확인해주세요.</p>
                     </div>
                 `;
             }
+        }
+
+        // HTML 이스케이프 함수
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // 게시글 상세보기

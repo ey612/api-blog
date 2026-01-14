@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>글 수정 - 블로그</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -11,15 +12,20 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .header-content {
             max-width: 1200px;
@@ -32,27 +38,42 @@
         .header-content h1 {
             font-size: 28px;
             cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .btn {
+        .user-badge {
+            background: rgba(255,255,255,0.2);
             padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn {
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .btn-logout {
             background: rgba(255,255,255,0.2);
             color: white;
-            border: 1px solid white;
+            border: 1px solid rgba(255,255,255,0.4);
         }
         .btn-logout:hover {
             background: rgba(255,255,255,0.3);
@@ -67,72 +88,85 @@
         .btn-submit {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 12px 24px;
+            padding: 12px 32px;
+            font-size: 16px;
         }
         .btn-submit:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
         .container {
             max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
         }
         .form-container {
             background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         .form-title {
-            font-size: 28px;
-            color: #333;
+            font-size: 32px;
+            color: #212529;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 3px solid #f1f3f5;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
+            margin-bottom: 10px;
+            color: #495057;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 16px;
         }
         input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 14px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            font-family: inherit;
         }
         textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 14px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
             font-size: 16px;
             resize: vertical;
-            min-height: 300px;
+            min-height: 400px;
             font-family: inherit;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            line-height: 1.6;
         }
         input:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         .form-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 3px solid #f1f3f5;
         }
         .message {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            border-radius: 8px;
             display: none;
+            font-weight: 500;
         }
         .message.success {
             background: #d4edda;
@@ -144,30 +178,94 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        .char-count {
+            text-align: right;
+            font-size: 14px;
+            color: #868e96;
+            margin-top: 8px;
+        }
         .loading {
             text-align: center;
-            padding: 60px 20px;
-            font-size: 18px;
+            padding: 80px 20px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 16px;
             color: #667eea;
+            font-weight: 500;
+        }
+        footer {
+            background: #343a40;
+            color: #adb5bd;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+        }
+        footer p {
+            margin-bottom: 8px;
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+            .form-title {
+                font-size: 26px;
+            }
+            .header-content h1 {
+                font-size: 22px;
+            }
+            .user-badge {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1 onclick="location.href='/'">📝 블로그</h1>
+            <h1 onclick="location.href='/'"><i class="fas fa-blog"></i> 블로그</h1>
             <div class="user-info">
-                <span class="user-name" id="userName"></span>
-                <button class="btn btn-logout" onclick="logout()">로그아웃</button>
+                <div class="user-badge">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName"></span>
+                </div>
+                <button class="btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
             </div>
         </div>
     </header>
 
     <div class="container">
         <div id="formWrapper" class="loading">
-            게시글을 불러오는 중...
+            <div class="spinner"></div>
+            <div class="loading-text">게시글을 불러오는 중...</div>
         </div>
     </div>
+
+    <footer>
+        <p>&copy; 2024 블로그. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color: #e74c3c;"></i> using Flask & Vanilla JS</p>
+    </footer>
 
     <script>
         const API_BASE_URL = 'http://localhost:5000/api';
@@ -179,7 +277,7 @@
         }
 
         // 사용자 이름 표시
-        document.getElementById('userName').textContent = user.username + '님';
+        document.getElementById('userName').textContent = user.username;
 
         // URL에서 게시글 ID 추출
         const postId = window.location.pathname.split('/')[2];
@@ -211,23 +309,45 @@
                 const wrapper = document.getElementById('formWrapper');
                 wrapper.className = 'form-container';
                 wrapper.innerHTML = `
-                    <h2 class="form-title">글 수정</h2>
+                    <h2 class="form-title">
+                        <i class="fas fa-edit"></i>
+                        글 수정
+                    </h2>
                     <div id="message" class="message"></div>
                     <form id="postForm">
                         <div class="form-group">
-                            <label for="title">제목</label>
-                            <input type="text" id="title" name="title" required value="${post.title}">
+                            <label for="title">
+                                <i class="fas fa-heading"></i> 제목
+                            </label>
+                            <input type="text" id="title" name="title" required value="${escapeHtml(post.title)}">
                         </div>
                         <div class="form-group">
-                            <label for="content">내용</label>
-                            <textarea id="content" name="content" required>${post.content}</textarea>
+                            <label for="content">
+                                <i class="fas fa-align-left"></i> 내용
+                            </label>
+                            <textarea id="content" name="content" required>${escapeHtml(post.content)}</textarea>
+                            <div class="char-count">
+                                <span id="charCount">${post.content.length.toLocaleString()}</span>자
+                            </div>
                         </div>
                         <div class="form-actions">
-                            <a href="/posts/${postId}" class="btn btn-back">취소</a>
-                            <button type="submit" class="btn btn-submit">수정하기</button>
+                            <a href="/posts/${postId}" class="btn btn-back">
+                                <i class="fas fa-times"></i> 취소
+                            </a>
+                            <button type="submit" class="btn btn-submit">
+                                <i class="fas fa-save"></i> 수정하기
+                            </button>
                         </div>
                     </form>
                 `;
+
+                // 글자 수 카운터
+                const contentTextarea = document.getElementById('content');
+                const charCountSpan = document.getElementById('charCount');
+
+                contentTextarea.addEventListener('input', () => {
+                    charCountSpan.textContent = contentTextarea.value.length.toLocaleString();
+                });
 
                 // 폼 제출 이벤트 리스너 추가
                 document.getElementById('postForm').addEventListener('submit', updatePost);
@@ -235,21 +355,37 @@
                 document.getElementById('formWrapper').innerHTML = `
                     <div class="form-container">
                         <div class="message error" style="display: block;">
-                            ${error.message}
+                            <i class="fas fa-exclamation-triangle"></i> ${error.message}
                         </div>
-                        <a href="/" class="btn btn-back" style="margin-top: 20px;">목록으로</a>
+                        <a href="/" class="btn btn-back" style="margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i> 목록으로
+                        </a>
                     </div>
                 `;
             }
+        }
+
+        // HTML 이스케이프 함수
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // 게시글 수정
         async function updatePost(e) {
             e.preventDefault();
 
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
             const messageDiv = document.getElementById('message');
+
+            if (!title || !content) {
+                messageDiv.textContent = '제목과 내용을 모두 입력해주세요.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                return;
+            }
 
             try {
                 const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
