@@ -11,9 +11,17 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     data = request.json #Postman에서 보낸 데이터 받기
     
-    #중복체크
+    if not data or 'username' not in data or 'email' not in data or 'password' not in data:
+        return jsonify({'error': '❗필수 항목을 입력해주세요.'}), 400
+    
+    #이메일 중복 체크
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'error': '❌ 이미 존재하는 이메일입니다.'}), 400
+    
+    #이름 중복 체크
+    if User.query.filter_by(username=data['username']).first():
+        return jsonify({'error': '❌ 이미 존재하는 이름입니다.'}), 400
+    
     
     #비밀번호 해싱
     hashed_password = generate_password_hash(data['password'])

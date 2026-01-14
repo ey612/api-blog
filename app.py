@@ -1,5 +1,6 @@
 # 실행 페이지
 from flask import Flask
+from flask_cors import CORS
 from config import Config
 from models import db
 
@@ -8,6 +9,9 @@ def create_app():
     
     #설정 로드
     app.config.from_object(Config)
+    
+    #CORS 설정
+    CORS(app)
     
     #DB 초기화
     db.init_app(app)
@@ -21,7 +25,7 @@ def create_app():
     
     #테이블 생성
     with app.app_context():
-        db.create_all
+        db.create_all()
         
     return app
 
