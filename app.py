@@ -24,7 +24,6 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix='/api')
     app.register_blueprint(posts_bp, url_prefix='/api')
     app.register_blueprint(comments_bp, url_prefix='/api')
-    
     #테이블 생성
     with app.app_context():
         db.create_all()
