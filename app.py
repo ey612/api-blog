@@ -1,5 +1,5 @@
 # 실행 페이지
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from config import Config
 from models import db
@@ -15,6 +15,11 @@ def create_app():
     
     #DB 초기화
     db.init_app(app)
+    
+    # 메인 페이지 라우트
+    @app.route('/')
+    def home():
+        return render_template('index.html')
     
     #Blueprint 등록
     from routes.auth import auth_bp
