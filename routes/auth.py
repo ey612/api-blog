@@ -70,17 +70,13 @@ def login():
         
         #사용자가 없거나 비밀번호가 틀리면
         if not user or not check_password_hash(user.password, data['password']):
-            return jsonify({'error': '이메일 또는 비밀번호가 잘못되었습니다.'})
+            return jsonify({'error': '이메일 또는 비밀번호가 잘못되었습니다.'}), 401  # ✅ 여기!
         
         return jsonify({
-            'message': '로그인 성공!',
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email
-            }
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email
         }), 200
     except Exception as e:
         print(f"error: {str(e)}")
-        return jsonify({error: str(e)}), 500
-
+        return jsonify({'error': str(e)}), 500

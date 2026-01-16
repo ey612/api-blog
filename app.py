@@ -19,9 +19,11 @@ def create_app():
     #Blueprint 등록 -- # Blueprint : 라우트를 그룹으로 묶는 방법
     from routes.auth import auth_bp
     from routes.posts import posts_bp
+    from routes.comments import comments_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api')
     app.register_blueprint(posts_bp, url_prefix='/api')
+    app.register_blueprint(comments_bp, url_prefix='/api')
     
     #테이블 생성
     with app.app_context():

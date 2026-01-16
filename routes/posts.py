@@ -92,3 +92,4 @@ def delete_post(post_id):
     return jsonify({
         'message': '게시글 삭제 완료.'
     }), 200
+    
