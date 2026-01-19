@@ -14,5 +14,5 @@ __pycache__/
 .vscode/
 .idea/
 
-# 환경 변수 (나중에 사용)
+# 환경 변수
 .env
