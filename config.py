@@ -1,5 +1,9 @@
 # 환경 파일
 import os
+from dotenv import load_dotenv
+
+# .env 파일 로드
+load_dotenv()
 
 class Config:
     #SQLite 데이터베이스 경로
