@@ -22,7 +22,18 @@ def register():
     if User.query.filter_by(username=data['username']).first():
         return jsonify({'error': '❌ 이미 존재하는 이름입니다.'}), 400
     
+    # 사용자 이름이 빈 문자열이거나 공백만 있는 경우 거절
+    if not isinstance(data['username'], str) or not data['username'].strip():
+        return jsonify({'error': '❗사용자 이름을 입력해주세요.'}), 400
+
+    # 이메일이 빈 문자열이거나 공백만 있는 경우 거절
+    if not isinstance(data['email'], str) or not data['email'].strip():
+        return jsonify({'error': '❗이메일을 입력해주세요.'}), 400
     
+    # 비밀번호가 빈 문자열이거나 공백만 있는 경우 거절
+    if not isinstance(data['password'], str) or not data['password'].strip():
+        return jsonify({'error': '❗비밀번호를 입력해주세요.'}), 400
+
     #비밀번호 해싱
     hashed_password = generate_password_hash(data['password'])
     
@@ -70,7 +81,7 @@ def login():
         
         #사용자가 없거나 비밀번호가 틀리면
         if not user or not check_password_hash(user.password, data['password']):
-            return jsonify({'error': '이메일 또는 비밀번호가 잘못되었습니다.'}), 401  # ✅ 여기!
+            return jsonify({'error': '이메일 또는 비밀번호가 잘못되었습니다.'}), 401
         
         return jsonify({
             'user_id': user.id,

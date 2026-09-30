@@ -4,11 +4,14 @@ from flask_cors import CORS
 from config import Config
 from models import db
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
     
     #설정 로드
     app.config.from_object(Config)
+
+    if test_config is not None:
+        app.config.update(test_config)
     
     #CORS 설정
     CORS(app)
