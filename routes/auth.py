@@ -1,6 +1,6 @@
 
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, current_app, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 
@@ -97,6 +97,6 @@ def login():
             'username': user.username,
             'email': user.email
         }), 200
-    except Exception as e:
-        print(f"error: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        current_app.logger.exception("로그인 처리 중 오류 발생")
+        return jsonify({"error": "서버 오류가 발생했습니다."}), 500
