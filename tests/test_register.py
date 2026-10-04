@@ -6,7 +6,7 @@ from werkzeug.security import check_password_hash
 from models import User
 
 
-# [TC-REG-001]: 정상 회원가입 시 사용자 정보 및 201 응답 검증
+# [TC-REG-001] 정상 회원가입 시 사용자 정보 및 201 응답 검증
 def test_register_success(client):
     response = client.post(
         "/api/register",
@@ -26,7 +26,7 @@ def test_register_success(client):
     assert "password" not in body
 
 
-# [TC-REG-002]: 중복 이메일로 회원가입 시 400 응답 검증
+# [TC-REG-002] 중복 이메일로 회원가입 시 400 응답 검증
 def test_register_duplicate_email(client):
     # 사전 조건: 동일한 이메일을 가진 사용자 생성
     first_response = client.post(
@@ -55,7 +55,7 @@ def test_register_duplicate_email(client):
     }
 
 
-# [TC-REG-003]: 중복 사용자 이름으로 회원가입 시 400 응답 검증
+# [TC-REG-003] 중복 사용자 이름으로 회원가입 시 400 응답 검증
 def test_register_duplicate_username(client):
     # 사전 조건: 기존 사용자 생성
     first_response = client.post(
@@ -84,7 +84,7 @@ def test_register_duplicate_username(client):
     }
 
 
-# [TC-REG-004~006]: 필수 필드 누락 시 400 응답 검증
+# [TC-REG-004~006] 필수 필드 누락 시 400 응답 검증
 @pytest.mark.parametrize(
     "missing_field",
     ["username", "email", "password"],
@@ -107,7 +107,7 @@ def test_register_missing_required_field(client, missing_field):
     }
 
 
-# [TC-REG-007]: 빈 문자열을 사용자 이름으로 전달했을 때 400 응답 검증
+# [TC-REG-007] 빈 문자열을 사용자 이름으로 전달했을 때 400 응답 검증
 def test_register_empty_username(client):
     response = client.post(
         "/api/register",
@@ -121,7 +121,7 @@ def test_register_empty_username(client):
     assert response.status_code == 400
 
 
-# [TC-REG-008]: 공백만 입력한 사용자 이름으로 회원가입 시 400 응답 검증
+# [TC-REG-008] 공백만 입력한 사용자 이름으로 회원가입 시 400 응답 검증
 def test_register_whitespace_only_username(client):
     response = client.post(
         "/api/register",
@@ -138,7 +138,7 @@ def test_register_whitespace_only_username(client):
     }
 
 
-# [TC-REG-009]: 빈 문자열을 이메일로 전달했을 때 400 응답 검증
+# [TC-REG-009] 빈 문자열을 이메일로 전달했을 때 400 응답 검증
 def test_register_empty_email(client):
     response = client.post(
         "/api/register",
@@ -172,7 +172,7 @@ def test_register_empty_password(client):
     }
 
 
-# [TC-REG-011]: 회원가입 시 비밀번호 해싱 및 DB 저장 결과 검증
+# [TC-REG-011] 회원가입 시 비밀번호 해싱 및 DB 저장 결과 검증
 def test_register_password_is_hashed(client, app):
     plain_password = "TestPassword123!"
 
