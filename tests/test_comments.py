@@ -1,8 +1,11 @@
+
+#tests/test_comments.py
 import pytest
 
-# [TC-COM-001] 정상 댓글 작성
+
+# [TC-COM-001] 정상 댓글 생성 시 댓글 정보 및 201 응답 검증
 def test_create_comment_success(client):
-    # 1. 사용자 생성
+    # 사전 조건: 댓글 작성자 생성
     register_response = client.post(
         "/api/register",
         json={
@@ -11,11 +14,11 @@ def test_create_comment_success(client):
             "password": "TestPassword123!",
         },
     )
-
     assert register_response.status_code == 201
+
     user_id = register_response.get_json()["id"]
 
-    # 2. 게시글 생성
+    # 사전 조건: 댓글을 작성할 게시글 생성
     post_response = client.post(
         "/api/posts",
         json={
@@ -24,11 +27,11 @@ def test_create_comment_success(client):
             "user_id": user_id,
         },
     )
-
     assert post_response.status_code == 201
+
     post_id = post_response.get_json()["id"]
 
-    # 3. 댓글 작성
+    # 댓글 생성 요청
     comment_response = client.post(
         f"/api/posts/{post_id}/comments",
         json={
@@ -37,18 +40,20 @@ def test_create_comment_success(client):
         },
     )
 
-    # 4. 결과 검증
+    # 생성 응답의 상태 코드 및 댓글 정보 검증
     assert comment_response.status_code == 201
-    assert isinstance(comment_response.get_json()["id"], int)
-    assert comment_response.get_json()["post_id"] == post_id
-    assert comment_response.get_json()["content"] == "첫 번째 댓글입니다."
-    assert comment_response.get_json()["user_id"] == user_id
-    assert "created_at" in comment_response.get_json()
+
+    comment = comment_response.get_json()
+    assert isinstance(comment["id"], int)
+    assert comment["post_id"] == post_id
+    assert comment["content"] == "첫 번째 댓글입니다."
+    assert comment["user_id"] == user_id
+    assert "created_at" in comment
 
 
-#[TC-COM-002] 댓글 목록 조회
+# [TC-COM-002] 댓글 목록 조회 시 생성한 댓글 및 200 응답 검증
 def test_get_comments_success(client):
-    # 1. 사용자 생성
+    # 사전 조건: 댓글 작성자 생성
     register_response = client.post(
         "/api/register",
         json={
@@ -57,11 +62,11 @@ def test_get_comments_success(client):
             "password": "TestPassword123!",
         },
     )
-
     assert register_response.status_code == 201
+
     user_id = register_response.get_json()["id"]
 
-    # 2. 게시글 생성
+    # 사전 조건: 댓글을 작성할 게시글 생성
     post_response = client.post(
         "/api/posts",
         json={
@@ -70,11 +75,11 @@ def test_get_comments_success(client):
             "user_id": user_id,
         },
     )
-
     assert post_response.status_code == 201
+
     post_id = post_response.get_json()["id"]
 
-    # 3. 댓글 작성
+    # 사전 조건: 조회할 댓글 생성
     comment_response = client.post(
         f"/api/posts/{post_id}/comments",
         json={
@@ -82,30 +87,29 @@ def test_get_comments_success(client):
             "user_id": user_id,
         },
     )
-
     assert comment_response.status_code == 201
+
     comment_id = comment_response.get_json()["id"]
 
-    # 4. 댓글 목록 조회
+    # 댓글 목록 조회 요청
     comments_response = client.get(f"/api/posts/{post_id}/comments")
 
-    # 5. 결과 검증
     assert comments_response.status_code == 200
 
     comments = comments_response.get_json()
-
     assert isinstance(comments, list)
     assert len(comments) == 1
 
+    # 생성한 댓글의 정보 검증
     assert comments[0]["id"] == comment_id
     assert comments[0]["content"] == "댓글 목록 조회 테스트 댓글입니다."
     assert comments[0]["user_id"] == user_id
     assert "created_at" in comments[0]
 
 
-#[TC-COM-003] 댓글 수정
+# [TC-COM-003] 댓글 수정 시 응답 및 저장 결과 검증
 def test_update_comment_success(client):
-    # 1. 사용자 생성
+    # 사전 조건: 댓글 작성자 생성
     register_response = client.post(
         "/api/register",
         json={
@@ -113,12 +117,12 @@ def test_update_comment_success(client):
             "email": "comment_update_test@example.com",
             "password": "TestPassword123!",
         },
-    )  
-
+    )
     assert register_response.status_code == 201
+
     user_id = register_response.get_json()["id"]
 
-    # 2. 게시글 생성
+    # 사전 조건: 댓글을 작성할 게시글 생성
     post_response = client.post(
         "/api/posts",
         json={
@@ -126,43 +130,42 @@ def test_update_comment_success(client):
             "content": "댓글을 수정할 게시글입니다.",
             "user_id": user_id,
         },
-    )   
-
+    )
     assert post_response.status_code == 201
+
     post_id = post_response.get_json()["id"]
 
-    # 3. 댓글 작성
+    # 사전 조건: 수정할 댓글 생성
     comment_response = client.post(
         f"/api/posts/{post_id}/comments",
         json={
             "content": "수정 전 댓글입니다.",
             "user_id": user_id,
         },
-    )   
-
+    )
     assert comment_response.status_code == 201
+
     comment_id = comment_response.get_json()["id"]
 
-    # 4. 댓글 수정
+    # 댓글 수정 요청
     update_response = client.put(
         f"/api/comments/{comment_id}",
         json={
             "content": "수정 후 댓글입니다.",
         },
-    )   
+    )
 
-    # 5. 수정 응답 검증
+    # 수정 응답의 상태 코드 및 댓글 정보 검증
     assert update_response.status_code == 200
 
     updated_comment = update_response.get_json()
-
     assert updated_comment["id"] == comment_id
     assert updated_comment["content"] == "수정 후 댓글입니다."
     assert updated_comment["user_id"] == user_id
     assert updated_comment["post_id"] == post_id
     assert "created_at" in updated_comment
 
-    # 6. 수정 내용이 실제로 저장되었는지 재조회
+    # 수정 내용의 실제 저장 여부를 댓글 목록 조회로 검증
     get_response = client.get(f"/api/posts/{post_id}/comments")
 
     assert get_response.status_code == 200
@@ -173,9 +176,9 @@ def test_update_comment_success(client):
     assert comments[0]["content"] == "수정 후 댓글입니다."
 
 
-#[TC-COM-004] 댓글 삭제
+# [TC-COM-004] 댓글 삭제 시 응답 및 삭제 결과 검증
 def test_delete_comment_success(client):
-    # 1. 사용자 생성
+    # 사전 조건: 댓글 작성자 생성
     register_response = client.post(
         "/api/register",
         json={
@@ -183,12 +186,12 @@ def test_delete_comment_success(client):
             "email": "comment_delete_test@example.com",
             "password": "TestPassword123!",
         },
-    )  
-
+    )
     assert register_response.status_code == 201
+
     user_id = register_response.get_json()["id"]
 
-    # 2. 게시글 생성
+    # 사전 조건: 댓글을 작성할 게시글 생성
     post_response = client.post(
         "/api/posts",
         json={
@@ -196,44 +199,42 @@ def test_delete_comment_success(client):
             "content": "댓글을 삭제할 게시글입니다.",
             "user_id": user_id,
         },
-    )   
-
+    )
     assert post_response.status_code == 201
+
     post_id = post_response.get_json()["id"]
 
-    # 3. 댓글 작성
+    # 사전 조건: 삭제할 댓글 생성
     comment_response = client.post(
         f"/api/posts/{post_id}/comments",
         json={
             "content": "삭제 전 댓글입니다.",
             "user_id": user_id,
         },
-    )   
-
+    )
     assert comment_response.status_code == 201
+
     comment_id = comment_response.get_json()["id"]
 
-    # 4. 댓글 삭제
+    # 댓글 삭제 요청
     delete_response = client.delete(f"/api/comments/{comment_id}")
 
-    # 5. 삭제 응답 검증
     assert delete_response.status_code == 200
     assert delete_response.get_json()["message"] == "댓글 삭제 완료."
 
-    # 6. 삭제된 댓글이 목록에 존재하지 않는지 확인
+    # 삭제 후 댓글 목록이 비어 있는지 검증
     get_response = client.get(f"/api/posts/{post_id}/comments")
 
     assert get_response.status_code == 200
 
     comments = get_response.get_json()
-
     assert isinstance(comments, list)
     assert len(comments) == 0
 
 
-#[TC-COM-005] 존재하지 않는 게시글에 댓글 작성 시도
+# [TC-COM-005] 존재하지 않는 게시글에 댓글 생성 시 404 응답 검증
 def test_create_comment_nonexistent_post(client):
-    # 1. 사용자 생성
+    # 사전 조건: 댓글 작성자 생성
     register_response = client.post(
         "/api/register",
         json={
@@ -241,15 +242,14 @@ def test_create_comment_nonexistent_post(client):
             "email": "comment_nonexistent_post@example.com",
             "password": "TestPassword123!",
         },
-    )  
-
+    )
     assert register_response.status_code == 201
+
     user_id = register_response.get_json()["id"]
 
-    # 2. 존재하지 않는 게시글 ID 사용
+    # 존재하지 않는 게시글 ID로 댓글 생성 요청
     nonexistent_post_id = 999999
 
-    # 3. 댓글 작성 시도
     comment_response = client.post(
         f"/api/posts/{nonexistent_post_id}/comments",
         json={
@@ -258,29 +258,26 @@ def test_create_comment_nonexistent_post(client):
         },
     )
 
-    # 4. 댓글 작성 실패 응답 검증
     assert comment_response.status_code == 404
     assert comment_response.get_json()["error"] == "게시글을 찾을 수 없습니다."
 
 
-#[TC-COM-006] 존재하지 않는 게시글의 댓글 목록 조회
+# [TC-COM-006] 존재하지 않는 게시글의 댓글 목록 조회 시 404 응답 검증
 def test_get_comments_nonexistent_post(client):
-    # 1. 존재하지 않는 게시글 ID 사용
     nonexistent_post_id = 999999
 
-    # 2. 댓글 목록 조회 시도
-    comments_response = client.get(f"/api/posts/{nonexistent_post_id}/comments")
+    comments_response = client.get(
+        f"/api/posts/{nonexistent_post_id}/comments"
+    )
 
-    # 3. 댓글 목록 조회 실패 응답 검증
     assert comments_response.status_code == 404
     assert comments_response.get_json()["error"] == "게시글을 찾을 수 없습니다."
 
-#[TC-COM-007] 존재하지 않는 댓글 수정 시도
+
+# [TC-COM-007] 존재하지 않는 댓글 수정 시 404 응답 검증
 def test_update_comment_nonexistent(client):
-    # 1. 존재하지 않는 댓글 ID 사용
     nonexistent_comment_id = 999999
 
-    # 2. 댓글 수정 시도
     update_response = client.put(
         f"/api/comments/{nonexistent_comment_id}",
         json={
@@ -288,29 +285,26 @@ def test_update_comment_nonexistent(client):
         },
     )
 
-    # 3. 댓글 수정 실패 응답 검증
     assert update_response.status_code == 404
     assert update_response.get_json()["error"] == "댓글을 찾을 수 없습니다."
 
 
-#[TC-COM-008] 존재하지 않는 댓글 삭제 시도
+# [TC-COM-008] 존재하지 않는 댓글 삭제 시 404 응답 검증
 def test_delete_comment_nonexistent(client):
-    # 1. 존재하지 않는 댓글 ID 사용
     nonexistent_comment_id = 999999
 
-    # 2. 댓글 삭제 시도
-    delete_response = client.delete(f"/api/comments/{nonexistent_comment_id}")
+    delete_response = client.delete(
+        f"/api/comments/{nonexistent_comment_id}"
+    )
 
-    # 3. 댓글 삭제 실패 응답 검증
     assert delete_response.status_code == 404
     assert delete_response.get_json()["error"] == "댓글을 찾을 수 없습니다."
 
 
-#[TC-COM-009][TC-COM-010] 댓글 작성 시 필수 필드 누락
-
+# [TC-COM-009~010] 댓글 생성 시 필수 필드 누락에 대한 400 응답 검증
 @pytest.mark.parametrize("missing_field", ["content", "user_id"])
 def test_create_comment_missing_fields(client, missing_field):
-    # 1. 사용자 생성
+    # 사전 조건: 댓글 작성자 생성
     register_response = client.post(
         "/api/register",
         json={
@@ -319,11 +313,11 @@ def test_create_comment_missing_fields(client, missing_field):
             "password": "TestPassword123!",
         },
     )
-
     assert register_response.status_code == 201
+
     user_id = register_response.get_json()["id"]
 
-    # 2. 게시글 생성
+    # 사전 조건: 댓글을 작성할 게시글 생성
     post_response = client.post(
         "/api/posts",
         json={
@@ -332,25 +326,22 @@ def test_create_comment_missing_fields(client, missing_field):
             "user_id": user_id,
         },
     )
-
     assert post_response.status_code == 201
+
     post_id = post_response.get_json()["id"]
 
-    # 3. 정상 요청 데이터 생성
+    # 이번 테스트에서 검증할 필수 필드 하나만 제거
     payload = {
         "content": "필수값 누락 테스트 댓글입니다.",
         "user_id": user_id,
     }
-
-    # 4. 필수 필드 제거
     payload.pop(missing_field)
 
-    # 5. 댓글 작성 시도
+    # 필수 필드가 누락된 댓글 생성 요청
     response = client.post(
         f"/api/posts/{post_id}/comments",
         json=payload,
     )
 
-    # 6. 댓글 작성 실패 응답 검증
     assert response.status_code == 400
     assert response.get_json()["error"] == "잘못된 접근입니다."
