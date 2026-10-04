@@ -49,27 +49,21 @@ Flask 기반 블로그 REST API를 구현하고, pytest를 활용해 주요 기�
 
 ## 로컬 실행 방법
 
-### 1. 저장소 복제
 
-```bash
-git clone <저장소 URL>
-cd <프로젝트 폴더>
-```
-
-### 2. 가상환경 생성 및 활성화
+### 1. 가상환경 생성 및 활성화
 
 ```bash
 python3.12 -m venv .venv312
 source .venv312/bin/activate
 ```
 
-### 3. 의존성 설치
+### 2. 의존성 설치
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-### 4. 환경변수 설정
+### 3. 환경변수 설정
 
 프로젝트 최상위 경로에 `.env` 파일을 생성합니다.
 
@@ -80,7 +74,7 @@ SECRET_KEY=replace-with-your-own-secret-key
 
 `SECRET_KEY`는 실제 사용 시 별도의 임의 문자열로 변경해야 합니다. `.env` 파일은 Git에 포함하지 않습니다.
 
-### 5. 서버 실행
+### 4. 서버 실행
 
 ```bash
 python app.py
