@@ -1,21 +1,15 @@
 
-# tests/test_posts.py
+from tests.helpers import create_post, create_user
 
 
 # [TC-POST-001] 정상 게시글 생성 시 게시글 정보 및 201 응답 검증
 def test_create_post_success(client):
     # 사전 조건: 게시글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "post_test_user",
-            "email": "post_test@example.com",
-            "password": "TestPassword123!",
-        },
+    user_id = create_user(
+        client,
+        username="post_test_user",
+        email="post_test@example.com",
     )
-    assert register_response.status_code == 201
-
-    user_id = register_response.get_json()["id"]
 
     # 게시글 생성 요청
     post_response = client.post(
@@ -38,31 +32,19 @@ def test_create_post_success(client):
 
 # [TC-POST-002] 게시글 목록 조회 시 생성한 게시글 및 200 응답 검증
 def test_get_posts_success(client):
-    # 사전 조건: 게시글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "post_list_test_user",
-            "email": "post_list_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 게시글 작성자 및 조회할 게시글 생성
+    user_id = create_user(
+        client,
+        username="post_list_test_user",
+        email="post_list_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 조회할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "첫 번째 게시글",
-            "content": "게시글 목록 조회 테스트입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="첫 번째 게시글",
+        content="게시글 목록 조회 테스트입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 게시글 목록 조회 요청
     posts_response = client.get("/api/posts")
@@ -86,31 +68,19 @@ def test_get_posts_success(client):
 
 # [TC-POST-003] 게시글 상세 조회 시 게시글 정보 및 200 응답 검증
 def test_get_post_success(client):
-    # 사전 조건: 게시글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "post_detail_test_user",
-            "email": "post_detail_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 게시글 작성자 및 조회할 게시글 생성
+    user_id = create_user(
+        client,
+        username="post_detail_test_user",
+        email="post_detail_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 조회할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "첫 번째 게시글",
-            "content": "게시글 상세 조회 테스트입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="첫 번째 게시글",
+        content="게시글 상세 조회 테스트입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 게시글 상세 조회 요청
     response = client.get(f"/api/posts/{post_id}")
@@ -127,31 +97,19 @@ def test_get_post_success(client):
 
 # [TC-POST-004] 게시글 수정 시 응답 및 저장 결과 검증
 def test_put_post_success(client):
-    # 사전 조건: 게시글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "post_update_test_user",
-            "email": "post_update_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 게시글 작성자 및 수정할 게시글 생성
+    user_id = create_user(
+        client,
+        username="post_update_test_user",
+        email="post_update_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 수정할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "첫 번째 게시글",
-            "content": "게시글 수정 테스트입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="첫 번째 게시글",
+        content="게시글 수정 테스트입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 게시글 수정 요청
     update_response = client.put(
@@ -182,31 +140,19 @@ def test_put_post_success(client):
 
 # [TC-POST-005] 게시글 삭제 시 응답 및 삭제 결과 검증
 def test_delete_post_success(client):
-    # 사전 조건: 게시글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "post_delete_test_user",
-            "email": "post_delete_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 게시글 작성자 및 삭제할 게시글 생성
+    user_id = create_user(
+        client,
+        username="post_delete_test_user",
+        email="post_delete_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 삭제할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "삭제 테스트 게시글",
-            "content": "게시글 삭제 테스트입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="삭제 테스트 게시글",
+        content="게시글 삭제 테스트입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 게시글 삭제 요청
     delete_response = client.delete(f"/api/posts/{post_id}")
