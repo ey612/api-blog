@@ -72,9 +72,18 @@ def login():
     try:
         data = request.json
         
-        #데이터 확인
+        # 필수 항목 확인
         if not data or 'email' not in data or 'password' not in data:
             return jsonify({'error': '이메일과 비밀번호를 확인해주세요.'}), 400
+        
+        # 이메일이 문자열이 아니거나 빈 문자열·공백만 있는 경우
+        if not isinstance(data['email'], str) or not data['email'].strip():
+            return jsonify({'error': '이메일을 입력해주세요.'}), 400
+        
+        # 비밀번호가 문자열이 아니거나 빈 문자열·공백만 있는 경우
+        if not isinstance(data['password'], str) or not data['password'].strip():
+            return jsonify({'error': '비밀번호를 입력해주세요.'}), 400
+        
         
         #사용자 찾기
         user = User.query.filter_by(email=data['email']).first()
