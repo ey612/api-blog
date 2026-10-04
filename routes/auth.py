@@ -12,27 +12,27 @@ def register():
     data = request.json #Postman에서 보낸 데이터 받기
     
     if not data or 'username' not in data or 'email' not in data or 'password' not in data:
-        return jsonify({'error': '❗필수 항목을 입력해주세요.'}), 400
+        return jsonify({'error': '필수 항목을 입력해주세요.'}), 400
     
     #이메일 중복 체크
     if User.query.filter_by(email=data['email']).first():
-        return jsonify({'error': '❌ 이미 존재하는 이메일입니다.'}), 400
+        return jsonify({'error': '이미 존재하는 이메일입니다.'}), 400
     
     #이름 중복 체크
     if User.query.filter_by(username=data['username']).first():
-        return jsonify({'error': '❌ 이미 존재하는 이름입니다.'}), 400
+        return jsonify({'error': '이미 존재하는 이름입니다.'}), 400
     
     # 사용자 이름이 빈 문자열이거나 공백만 있는 경우 거절
     if not isinstance(data['username'], str) or not data['username'].strip():
-        return jsonify({'error': '❗사용자 이름을 입력해주세요.'}), 400
+        return jsonify({'error': '사용자 이름을 입력해주세요.'}), 400
 
     # 이메일이 빈 문자열이거나 공백만 있는 경우 거절
     if not isinstance(data['email'], str) or not data['email'].strip():
-        return jsonify({'error': '❗이메일을 입력해주세요.'}), 400
+        return jsonify({'error': '이메일을 입력해주세요.'}), 400
     
     # 비밀번호가 빈 문자열이거나 공백만 있는 경우 거절
     if not isinstance(data['password'], str) or not data['password'].strip():
-        return jsonify({'error': '❗비밀번호를 입력해주세요.'}), 400
+        return jsonify({'error': '비밀번호를 입력해주세요.'}), 400
 
     #비밀번호 해싱
     hashed_password = generate_password_hash(data['password'])

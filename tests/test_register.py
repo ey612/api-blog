@@ -51,7 +51,7 @@ def test_register_duplicate_email(client):
 
     assert response.status_code == 400
     assert response.get_json() == {
-        "error": "❌ 이미 존재하는 이메일입니다."
+        "error": "이미 존재하는 이메일입니다."
     }
 
 
@@ -80,7 +80,7 @@ def test_register_duplicate_username(client):
 
     assert response.status_code == 400
     assert response.get_json() == {
-        "error": "❌ 이미 존재하는 이름입니다."
+        "error": "이미 존재하는 이름입니다."
     }
 
 
@@ -103,7 +103,7 @@ def test_register_missing_required_field(client, missing_field):
 
     assert response.status_code == 400
     assert response.get_json() == {
-        "error": "❗필수 항목을 입력해주세요."
+        "error": "필수 항목을 입력해주세요."
     }
 
 
@@ -134,7 +134,7 @@ def test_register_whitespace_only_username(client):
 
     assert response.status_code == 400
     assert response.get_json() == {
-        "error": "❗사용자 이름을 입력해주세요."
+        "error": "사용자 이름을 입력해주세요."
     }
 
 
@@ -151,11 +151,11 @@ def test_register_empty_email(client):
 
     assert response.status_code == 400
     assert response.get_json() == {
-        "error": "❗이메일을 입력해주세요."
+        "error": "이메일을 입력해주세요."
     }
 
 
-# [TC-REG-010]: 빈 문자열을 비밀번호로 전달했을 때 400 응답 검증
+# [TC-REG-010] 빈 문자열을 비밀번호로 전달했을 때 400 응답 검증
 def test_register_empty_password(client):
     response = client.post(
         "/api/register",
@@ -168,7 +168,7 @@ def test_register_empty_password(client):
 
     assert response.status_code == 400
     assert response.get_json() == {
-        "error": "❗비밀번호를 입력해주세요."
+        "error": "비밀번호를 입력해주세요."
     }
 
 
