@@ -1,35 +1,25 @@
 
-#tests/test_comments.py
+# tests/test_comments.py
 import pytest
+
+from tests.helpers import create_post, create_user
 
 
 # [TC-COM-001] 정상 댓글 생성 시 댓글 정보 및 201 응답 검증
 def test_create_comment_success(client):
-    # 사전 조건: 댓글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "comment_test_user",
-            "email": "comment_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 댓글 작성자 및 게시글 생성
+    user_id = create_user(
+        client,
+        username="comment_test_user",
+        email="comment_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 댓글을 작성할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "댓글 테스트 게시글",
-            "content": "댓글을 작성할 게시글입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="댓글 생성 테스트 게시글",
+        content="댓글 생성 테스트 게시글입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 댓글 생성 요청
     comment_response = client.post(
@@ -53,31 +43,19 @@ def test_create_comment_success(client):
 
 # [TC-COM-002] 댓글 목록 조회 시 생성한 댓글 및 200 응답 검증
 def test_get_comments_success(client):
-    # 사전 조건: 댓글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "comment_list_test_user",
-            "email": "comment_list_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 댓글 작성자 및 게시글 생성
+    user_id = create_user(
+        client,
+        username="comment_list_test_user",
+        email="comment_list_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 댓글을 작성할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "댓글 목록 테스트 게시글",
-            "content": "댓글 목록을 조회할 게시글입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="댓글 목록 테스트 게시글",
+        content="댓글 목록을 조회할 게시글입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 사전 조건: 조회할 댓글 생성
     comment_response = client.post(
@@ -109,31 +87,19 @@ def test_get_comments_success(client):
 
 # [TC-COM-003] 댓글 수정 시 응답 및 저장 결과 검증
 def test_update_comment_success(client):
-    # 사전 조건: 댓글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "comment_update_test_user",
-            "email": "comment_update_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 댓글 작성자 및 게시글 생성
+    user_id = create_user(
+        client,
+        username="comment_update_test_user",
+        email="comment_update_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 댓글을 작성할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "댓글 수정 테스트 게시글",
-            "content": "댓글을 수정할 게시글입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="댓글 수정 테스트 게시글",
+        content="댓글을 수정할 게시글입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 사전 조건: 수정할 댓글 생성
     comment_response = client.post(
@@ -178,31 +144,19 @@ def test_update_comment_success(client):
 
 # [TC-COM-004] 댓글 삭제 시 응답 및 삭제 결과 검증
 def test_delete_comment_success(client):
-    # 사전 조건: 댓글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "comment_delete_test_user",
-            "email": "comment_delete_test@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 댓글 작성자 및 게시글 생성
+    user_id = create_user(
+        client,
+        username="comment_delete_test_user",
+        email="comment_delete_test@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 댓글을 작성할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "댓글 삭제 테스트 게시글",
-            "content": "댓글을 삭제할 게시글입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="댓글 삭제 테스트 게시글",
+        content="댓글을 삭제할 게시글입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 사전 조건: 삭제할 댓글 생성
     comment_response = client.post(
@@ -235,17 +189,11 @@ def test_delete_comment_success(client):
 # [TC-COM-005] 존재하지 않는 게시글에 댓글 생성 시 404 응답 검증
 def test_create_comment_nonexistent_post(client):
     # 사전 조건: 댓글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "comment_nonexistent_post_user",
-            "email": "comment_nonexistent_post@example.com",
-            "password": "TestPassword123!",
-        },
+    user_id = create_user(
+        client,
+        username="comment_nonexistent_post_user",
+        email="comment_nonexistent_post@example.com",
     )
-    assert register_response.status_code == 201
-
-    user_id = register_response.get_json()["id"]
 
     # 존재하지 않는 게시글 ID로 댓글 생성 요청
     nonexistent_post_id = 999999
@@ -304,31 +252,19 @@ def test_delete_comment_nonexistent(client):
 # [TC-COM-009~010] 댓글 생성 시 필수 필드 누락에 대한 400 응답 검증
 @pytest.mark.parametrize("missing_field", ["content", "user_id"])
 def test_create_comment_missing_fields(client, missing_field):
-    # 사전 조건: 댓글 작성자 생성
-    register_response = client.post(
-        "/api/register",
-        json={
-            "username": "comment_missing_field_user",
-            "email": "comment_missing_field@example.com",
-            "password": "TestPassword123!",
-        },
+    # 사전 조건: 댓글 작성자 및 게시글 생성
+    user_id = create_user(
+        client,
+        username="comment_missing_field_user",
+        email="comment_missing_field@example.com",
     )
-    assert register_response.status_code == 201
 
-    user_id = register_response.get_json()["id"]
-
-    # 사전 조건: 댓글을 작성할 게시글 생성
-    post_response = client.post(
-        "/api/posts",
-        json={
-            "title": "댓글 필수 필드 누락 테스트 게시글",
-            "content": "댓글 작성 시 필수 필드 누락 테스트 게시글입니다.",
-            "user_id": user_id,
-        },
+    post_id = create_post(
+        client,
+        user_id=user_id,
+        title="댓글 필수 필드 누락 테스트 게시글",
+        content="댓글 작성 시 필수 필드 누락 테스트 게시글입니다.",
     )
-    assert post_response.status_code == 201
-
-    post_id = post_response.get_json()["id"]
 
     # 이번 테스트에서 검증할 필수 필드 하나만 제거
     payload = {
