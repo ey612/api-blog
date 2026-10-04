@@ -94,6 +94,18 @@ pytest를 사용하여 회원가입, 로그인, 게시글 및 댓글 API를 검�
 | `test_comments.py` | 댓글 CRUD | 10 |
 | **합계** | | **38** |
 
+### CI (GitHub Actions)
+
+GitHub Actions를 이용해 `push` 및 `pull_request` 발생 시 API 자동화 테스트를 실행하도록 구성했습니다.
+
+- **실행 환경:** Ubuntu, Python 3.12
+- **테스트 도구:** pytest
+- **실행 명령어:** `python -m pytest tests/ -v`
+- **검증 범위:** 회원가입, 로그인, 게시글 및 댓글 API 총 38개 테스트
+- **테스트 데이터:** 테스트별 독립 SQLite DB 사용
+
+GitHub Actions에서 전체 38개 테스트 통과를 확인했습니다.
+
 ### 테스트 설계 및 구성
 
 - 정상 및 비정상 요청에 대한 HTTP 상태 코드와 응답 데이터 검증
@@ -127,7 +139,3 @@ Render에서 Gunicorn을 이용해 Flask 애플리케이션을 실행하도록 �
 - **Start command:** `gunicorn app:app`
 
 배포 환경에서는 `DATABASE_URL`과 `SECRET_KEY`를 별도로 설정해야 합니다.
-
-## 향후 개선
-
-- GitHub Actions를 이용한 자동화 테스트 CI 구성
